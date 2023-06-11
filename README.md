@@ -43,41 +43,29 @@ to all animals are:
 - threshold, the minimum amount of energy needed to breed.
 - mating season limits, a lower and upper month of the
     year in which the animal can mate.
-    
-Herbivores are randomly sparsed on the territory according
-to a certain percentage HERBIVORE_RATIO. At each simulation
-cycle each herbivore, in random order, can do the following:
 
-    IF its energy or its timespan is <= 0 THEN die.
-    ELIF its energy >= its threshold and the month is one of
-        the mating season and there is an empty cell near
-        the cell occupied by the animal THEN a new animal
-        is born in the empty cell. The parent energy
-        decreases.
-    ELIF there is a plant in a cell near to its cell
-        THEN move to that cell, eat the plant and increase
-        its energy.
-    ELSE try to move on a near cell if empty.
+At each simulation
+cycle each animal, in random order, does the following:
 
-Carnivores are randomly sparsed on the territory according
-to a certain percentage CARNIVORE_RATIO. At each simulation
-cycle each carnivore, in random order, can do the following:
-    
-    IF its energy or its timespan is <= 0 THEN die.
-    ELIF its energy >= its threshold and the month is one of
-        the mating season and there is an empty cell near
-        the cell occupied by the animal THEN a new animal
-        is born in the empty cell.
-    ELIF there is a herbivore in a cell near to its cell
-        THEN move to that cell and eat the herbovore, which
-        dies.
-    ELSE try to move on a near cell if empty or contains
-        a plant.
+- increase its age and decrease its energy (and die if it becomes too old or too weak);
+- if its energy is sufficient and the current month is one its mating season then it mates, if there's an empty space around it. On mating energy decreases.
+- else if eat, is there's food at hand.
+- else move around.
+
+Herbivores eat plants if there's one plant around them and move to the plant location. Carnivores eat herbivores if there's one around them and move to the herbivore location: the herbivore dies.
+
+At start herbivores are located at north, carnivores at south: once can change that and make each species to be located in a rectangle inside the territory at start.
+
+Also, at start the number of herbivores and carnivores can be changed on changing the HERBIVORE_RATIO and CARNIVORE_RATIO parameters in the `simulation` function.
+
+Data collected during the simulation are eventually saved on a csv file `prey_predator_simulation.csv`.
 
 A simulation cycle represents a month.
 
-## Implementation
+### Implementation details (largely TODO)
 
 The code is simple minded, not optimized but hopefully easily understandable and portable.
 
-Since object orientation was invented to program simulations it is worth to use classes.
+Since object orientation was invented to program simulations I used classes: two classes are just attribute containers, `Nil` and `Plant` which represent an empty spot in the territory and a plant. The `Territory` class essentially maintains the grid where living beings take place, and also has methods to display its status: in particular, by using the `Tkinker` built-in class, a simple animation is performed during the simulation.
+
+The `Animal` class abstract features of all species included in the simulation, while the `Carnivore` and `Herbivore` subclasses model obviously carnivores and herbivores, implementing virtual functions when needed.

@@ -354,7 +354,7 @@ def simulation(N: int,
                 else:
                     i += 1
 
-    with open("lvts.csv", "w") as f:
+    with open("prey_predator_simulation.csv", "w") as f:
         f.write(str(csvstring))
     print("Time series dumped on file lvts.csv")
 
