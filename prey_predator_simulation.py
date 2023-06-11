@@ -33,6 +33,7 @@ PLANT = 1.0
 HERBIVORE = 2.0
 CARNIVORE = 3.0
 
+
 class Territory:
 
     def __init__(self, N, M):
@@ -77,7 +78,7 @@ class Territory:
             for j in [-1,0,1]:
                 if i == 0 and j == 0:
                     continue
-                if x+i >= 0 and x+i < self.N and y+j >= 0 and y+j < self.M and self.grid[x+i][y+j].kind == kind:
+                if 0 <= x+i < self.N and 0 <= y+j < self.M and self.grid[x+i][y+j].kind == kind:
                     neighbors.append((x+i,y+j))
         return neighbors
 
@@ -111,8 +112,10 @@ class Territory:
                         canvas.create_rectangle((x0, y0), (x1, y1),
                                                 fill="red", outline="red")
 
+
 class Nil:
     kind = NIL
+
 
 class Plant:
     kind = PLANT
@@ -230,6 +233,7 @@ class Carnivore(Animal):
         super().move_random()
         super().move_random()
 
+
 def simulation(N: int,
                M: int,
                MAX_MONTH: int,
@@ -317,7 +321,7 @@ def simulation(N: int,
             if territory.get(x, y).kind == NIL:
                 # Counts the number of neighbourhoods: if 3 or
                 # more are plants, then here a plant shall born
-                if len(territory.find_near(x, y, PLANT)) > 2:
+                if len(territory.find_near(x, y, PLANT)) > 0:
                     territory.put(x, y, Plant())
 
         # Animals do things
