@@ -2,12 +2,11 @@
 
 ### Paolo Caressa
 
-This repository contains a script which implements, in a non idiomatic and plain lean-and-mean Python 3 (no Numpy, no Pandas etc.), an agent based model for a simple ecological predator-prey system.
+This repository contains a script which implements, in a non idiomatic and plain lean-and-mean Python 3 (no Numpy, no Pandas, no Matplotlib etc.), an agent based model for a simple ecological predator-prey system.
 
 It is essentially borrowed from Gary W Flake *The Computational Beauty of the Nature*, where the idea for the set up and the algorithms in their essence are described.
 
 This is not serious research, just a toy but I hope it could be useful to someone.
-
 
 The simulation happens in a *territory*, thus a 2D grid whose
 cells can contain nothing, plants, a herbivore or a carnivore.
@@ -23,14 +22,13 @@ Three kinds of agents share the territory:
 - Herbivores
 - Carnivores
         
-Plants are randomly sparsed on the territory according to
+Plants are randomly spread on the territory according to
 a certain percentage PLANT_RATIO, and they breed and spread
 on the territory, just by contact with empty cells that they
-populate.
+populate (a certain `threshold`, static attribute of the `Plant` class, determines how many plants are needed around an empty spot to let a plant to be born therein).
     
-Actually, plants do not need to be represented by agents
-since they are part of the territory. It is assumed that plants
-do not die and they are just characterized by occupying a cell
+It is assumed that plants
+do not die, unless a herbivore eats them, and they are just characterized by occupying a cell
 or not.
     
 Animals, instead, can die, mate, eat and move, so they

@@ -101,30 +101,33 @@ class Territory:
                 # Coordinates of rectangle to print
                 x0, y0 = self.CELL_WIDTH*x, self.CELL_WIDTH*y
                 x1, y1 = x0 + self.CELL_WIDTH, y0 + self.CELL_WIDTH
-                match self.grid[y][x].kind:
-                    case 1.0:
-                        canvas.create_rectangle((x0, y0), (x1, y1),
-                                                fill="green", outline="green")
-                    case 2.0:
-                        canvas.create_rectangle((x0, y0), (x1, y1),
-                                                fill="grey", outline="grey")
-                    case 3.0:
-                        canvas.create_rectangle((x0, y0), (x1, y1),
-                                                fill="red", outline="red")
+                if self.grid[y][x].kind == PLANT:
+                    canvas.create_rectangle((x0, y0), (x1, y1),
+                                            fill="green", outline="green")
+                if self.grid[y][x].kind == HERBIVORE:
+                    canvas.create_rectangle((x0, y0), (x1, y1),
+                                            fill="grey", outline="grey")
+                if self.grid[y][x].kind == CARNIVORE:
+                    canvas.create_rectangle((x0, y0), (x1, y1),
+                                            fill="red", outline="red")
 
 
 class Nil:
+    """This class is needed instead of None since we want it
+    to have a `kind` attribute, to make code simpler."""
     kind = NIL
 
 
 class Plant:
     kind = PLANT
+    threshold = 0   # Number of plants around an empty place needed to generate another plant
+
 
 class Animal:
 
     @classmethod
-    def reproduce(c, territory, x, y):
-        return c(territory, x, y)
+    def reproduce(cls, territory, x, y):
+        return cls(territory, x, y)
     
     def __init__(self, territory, x, y):
         self.territory = territory
@@ -176,13 +179,15 @@ class Animal:
         self.y = y
         self.territory.put(x, y, self)
 
+
 class Herbivore(Animal):
+
+    kind = HERBIVORE
 
     def __init__(self, territory, x, y):
         super().__init__(territory, x,y)
         self.energy = 8
         self.timespan = (8 + randrange(-1,2))*12
-        self.kind = HERBIVORE
         self.mate_start = 1
         self.mate_end = 4
         self.threshold = 3    # minimum amount of energy to spawn
@@ -200,13 +205,15 @@ class Herbivore(Animal):
             return True
         return False
     
+
 class Carnivore(Animal):
+
+    kind = CARNIVORE
 
     def __init__(self, territory, x, y):
         super().__init__(territory, x,y)
         self.energy = 12
         self.timespan = (12 + randrange(-1,2))*12
-        self.kind = CARNIVORE
         self.mate_start = 6
         self.mate_end = 11
         self.threshold = 6    # minimum amount of energy to spawn
@@ -227,7 +234,7 @@ class Carnivore(Animal):
         return False
 
     def move_random(self):
-        """A carnivore moves twice an herbivore."""
+        """A carnivore moves more than a herbivore."""
         super().move_random()
         super().move_random()
         super().move_random()
@@ -319,9 +326,10 @@ def simulation(N: int,
             x = randrange(0, N)
             y = randrange(0, M)
             if territory.get(x, y).kind == NIL:
-                # Counts the number of neighbourhoods: if 3 or
-                # more are plants, then here a plant shall born
-                if len(territory.find_near(x, y, PLANT)) > 0:
+                # Counts the number of neighbourhoods: if more than
+                # Plant.threshold plants are around the empty place
+                # then here a plant shall be born
+                if len(territory.find_near(x, y, PLANT)) > Plant.threshold:
                     territory.put(x, y, Plant())
 
         # Animals do things
@@ -349,6 +357,7 @@ def simulation(N: int,
     with open("lvts.csv", "w") as f:
         f.write(str(csvstring))
     print("Time series dumped on file lvts.csv")
+
 
 simulation(N = 100,
            M = 100,
